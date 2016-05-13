@@ -11,7 +11,34 @@
     
     
     <script type="text/cq" id="cq">
-      // Run queries and display results here
+      function main() {
+  return Events({
+    from_date: '2015-04-01',
+    to_date:   '2016-04-30',
+    event_selectors: [{event: 'Viewed report'}, {event: 'invited to register'}]
+  })
+  .groupByUser(function(state, events){
+    state = state || {
+      "report_view_count" : 0,
+      "invited_to_register" : false
+    };
+    if(!state.invited_to_register){
+      for(var i = 0; i < events.length; i++){
+        if(events[i].name == "Viewed report"){
+          state.report_view_count++;
+        }
+        if(events[i].name == "invited to register"){
+          state.invited_to_register = true;
+          break;
+        }
+      }
+    }
+    return state;
+  })
+  .filter(function(userItem){
+    return userItem.value.invited_to_register;
+  });
+}
     </script>
     
     
